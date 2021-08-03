@@ -29,8 +29,8 @@ source ../patch.d/*.sh
 CPU_CORES=$(grep -c processor < /proc/cpuinfo)
 make deb-pkg -j"$CPU_CORES"
 
-# copy deb packages to artifact dir
+# move deb packages to artifact dir
 cd ..
 mkdir "artifact"
 # shellcheck disable=SC2010
-cp "$(ls -- *.deb | grep -v dbg)" artifact/
+mv "$(ls -- *.deb | grep -v dbg)" artifact/
