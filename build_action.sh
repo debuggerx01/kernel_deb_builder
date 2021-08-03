@@ -23,7 +23,7 @@ cp ../config .config
 
 # apply patches
 # shellcheck source=src/util.sh
-source ./patch.d/*.sh
+source ../patch.d/*.sh
 
 # build deb packages
 CPU_CORES=$(grep -c processor < /proc/cpuinfo)
