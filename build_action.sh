@@ -31,6 +31,5 @@ make deb-pkg -j"$CPU_CORES"
 
 # move deb packages to artifact dir
 cd ..
-mkdir "artifact"
-# shellcheck disable=SC2010
-mv "$(ls -- *.deb | grep -v dbg)" artifact/
+rm ./*dbg*.deb
+mv ./*.deb artifact/
