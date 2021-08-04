@@ -9,17 +9,16 @@ jobs:
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
-          root-reserve-mb: 1024
+          root-reserve-mb: 4096
           swap-size-mb: 512
           remove-dotnet: 'true'
           remove-android: 'true'
-          remove-haskell: 'true'
 
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Build
-        run: bash monitor.sh & sudo bash build_action.sh && rm monitor.sh
+        run: sudo bash build_action.sh
 
       - name: Artifact
         uses: actions/upload-artifact@v2
