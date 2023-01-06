@@ -7,7 +7,7 @@ sed -i "/deb-src/s/# //g" /etc/apt/sources.list
 
 # install dep
 apt update
-apt install -y wget xz-utils
+apt install -y wget xz-utils make
 apt build-dep -y linux
 
 # change dir to workplace
