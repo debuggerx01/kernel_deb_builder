@@ -6,9 +6,9 @@ VERSION=$(grep 'Kernel Configuration' < config | awk '{print $3}')
 sed -i "/deb-src/s/# //g" /etc/apt/sources.list
 
 # install dep
-sudo apt update
-sudo apt install -y wget
-sudo apt build-dep -y linux
+apt update
+apt install -y wget
+apt build-dep -y linux
 
 # change dir to workplace
 cd "${GITHUB_WORKSPACE}" || exit
