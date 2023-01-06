@@ -7,7 +7,7 @@ sed -i "/deb-src/s/# //g" /etc/apt/sources.list
 
 # install dep
 apt update
-apt install -y wget
+apt install -y wget zx-utils
 apt build-dep -y linux
 
 # change dir to workplace
@@ -15,7 +15,6 @@ cd "${GITHUB_WORKSPACE}" || exit
 
 # download kernel source
 wget http://www.kernel.org/pub/linux/kernel/v5.x/linux-"$VERSION".tar.xz
-ls
 tar -xf linux-"$VERSION".tar.xz
 cd linux-"$VERSION" || exit
 
