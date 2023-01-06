@@ -5,7 +5,7 @@ jobs:
   build:
     name: Build kernel
     runs-on: ubuntu-latest
-    container: daze456/deepin-desktop:latest
+    container: debian:buster
     steps:
       - name: Checkout
         uses: actions/checkout@v2
