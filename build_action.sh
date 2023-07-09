@@ -34,5 +34,6 @@ make deb-pkg -j"$CPU_CORES"
 
 # move deb packages to artifact dir
 cd ..
+rm -rfv *dbg*.deb
 mkdir "artifact"
 mv ./*.deb artifact/
