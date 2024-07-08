@@ -1,0 +1,21 @@
+name: release kernel package
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+jobs:
+  build:
+    name: release kernel package
+    runs-on: ubuntu-latest
+    steps:
+      - name: wget kernel
+        run: |
+          wget http://www.kernel.org/pub/linux/kernel/v6.x/linux-6.9.8.tar.xz
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            linux-6.9.8.tar.xz
+          tag_name: linux-6.9.8
+          name: linux-6.9.8

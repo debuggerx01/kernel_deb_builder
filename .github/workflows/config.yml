@@ -1,0 +1,32 @@
+name: save space
+on:
+  push:
+    branches:
+      - dev
+      - main
+      - openkylin
+  workflow_dispatch:
+env:
+  KERNEL_VERSION: linux-6.9.8
+  DEBIAN_FRONTEND: noninteractiv
+jobs:
+  build:
+    name: save space
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 60000
+          temp-reserve-mb: 50
+          swap-size-mb: 512
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+      - name: saveSpace
+        run: rm -rf /opt/hostedtoolcache
+      - name: Optimize apt cache
+        run: |
+          df -h

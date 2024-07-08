@@ -1,20 +1,30 @@
-name: Build kernel deb packages
-on: push
-
+name: Build kernel deb packages shell
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
 jobs:
   build:
-    name: Build kernel
+    name: Build kernel by shell
     runs-on: ubuntu-latest
-    container: debian:buster
+    container: ubuntu:focal
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
       - name: Build
         run: bash build_action.sh
-
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
           name: artifact
           path: ${{ github.workspace }}/artifact/
+      - name: Archive
+        run: tar acvf artifact.tar ${{ github.workspace }}/artifact
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ github.workspace }}/artifact.tar
+          tag_name: latest_release
+          name: kernel

@@ -1,0 +1,92 @@
+name: Build kernel deb packages for openkylin
+on:
+  push:
+    branches:
+      - dev
+      - master
+    tags:
+      - 'kernel*'
+  workflow_dispatch:
+env:
+  KERNEL_VERSION: linux-6.9.8
+  DEBIAN_FRONTEND: noninteractiv
+jobs:
+  build:
+    name: Build kernel for openkylin
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:focal
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Generate config
+        run: |
+          ls -al
+          pwd
+          go run main.go
+      - name: saveSpace
+        run: rm -rf /opt/hostedtoolcache
+      - name: add deb-src to sources.list
+        run: |
+          cat /etc/apt/sources.list
+          sed -i "/deb-src/s/# //g" /etc/apt/sources.list
+          cat /etc/apt/sources.list
+      - name: install dep
+        run: |
+          df -h
+          apt update
+          apt install -y libncurses-dev pkg-config wget git xz-utils make gcc flex bison dpkg-dev bc rsync kmod cpio libssl-dev
+          apt build-dep -y linux
+          apt autoremove -y
+          apt clean -y
+      - name: Optimize apt cache
+        run: |
+          rm -rf /var/lib/apt/lists/*
+      - name: download kernel source
+        run: |
+          wget http://www.kernel.org/pub/linux/kernel/v6.x/${{ env.KERNEL_VERSION }}.tar.xz
+          tar -xf ${{ env.KERNEL_VERSION }}.tar.xz
+          rm ${{ env.KERNEL_VERSION }}.tar.xz
+      - name: copy config file
+        run: |
+          pwd
+          cp smartConfig ${{ env.KERNEL_VERSION }}/.config
+      - name: make git
+        run: |
+          cd ${{ env.KERNEL_VERSION }}
+          git init
+          git add .
+          git config --global user.name "Your Name"
+          git config --global user.email "youremail@yourdomain.com"
+          git commit -m "1"
+      - name: build deb packages
+        run: |
+          cd ${{ env.KERNEL_VERSION }}
+          pwd
+          make olddefconfig
+          scripts/config --disable DEBUG_INFO
+          scripts/config --enable MODULE_COMPRESS
+          make CCACHE_DISABLE=1 deb-pkg -j8
+      - name: move deb packages to artifact dir
+        run: |
+          mkdir ${{ github.workspace }}/artifact
+          find ${{ github.workspace }} -name "*dbg*.deb" -exec rm -rfv {} \;
+          find ${{ github.workspace }} -name "*.deb" -exec mv {} ${{ github.workspace }}/artifact \;
+          tar acvf artifact.tar ${{ github.workspace }}/artifact
+      - name: Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact
+          files: |
+            *.deb
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.deb
+          tag_name: openkylin
+          name: kernel
